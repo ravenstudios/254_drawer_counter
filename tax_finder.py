@@ -1,119 +1,106 @@
 import tkinter as tk
 from tkinter import ttk
+import clipboard
 # from tkinter.messagebox import showinfo
 class Tax_finder:
-    def __init__(self, root):
-        self.total_price = 0
-        self.labor = 55
-        self.part_price = 0;
+    def __init__(self, root, main_window):
+
+        self.TAX = 1.0825
+
+        self.total_price = 100
+        self.labor_price = 55
+        self.part_price = 0
+
         self.TEXT_ENTRY_LENGTH = 7
 
-        # root window
+        self.tax_finder_frame = ttk.Frame(root)
+        self.tax_finder_frame.pack(padx=10, pady=10, fill='x', expand=True)
+
+        self.total_price_label = None
+        self.labor_price_label = None
+        self.part_price_label = None
+
+        self.total_price_entry = None
+        self.labor_price_entry = None
+        self.part_price_result_lable = None
+
+        self.submit_button = None
+        self.main_window = main_window
+        self.root = root
+
+    def calc_tax_price(self):
+        total = float(self.total_price_entry.get())
+        labor = float(self.labor_price_entry.get())
+        self.part_price = float((total - labor) / self.TAX)
+        self.total_entry.delete(0, tk.END)
+        self.total_entry.insert(0, f'{self.part_price:.2f}')
 
 
-        self.frame = ttk.Frame(root)
-        self.frame.pack(padx=10, pady=10, fill='x', expand=True)
 
-        self.total_entry = ttk.Entry(
-            self.frame,
-            textvariable=self.total,
+    def setup(self):
+
+        self.tax_directions = ttk.Label(self.tax_finder_frame, text="Enter full ammount and labor to find price for part", font=("Arial", 15))
+        self.total_price_label = ttk.Label(self.tax_finder_frame, text="Enter Full Price")
+        self.labor_price_label = ttk.Label(self.tax_finder_frame, text="Enter Full Labor Price")
+        self.part_price_label = ttk.Label(self.tax_finder_frame, text="Price For Part")
+        self.part_price_result_lable = ttk.Label(self.tax_finder_frame, text="")
+
+
+        self.total_price_entry = ttk.Entry(
+            self.tax_finder_frame,
+            textvariable = self.total_price,
             width = self.TEXT_ENTRY_LENGTH,
             justify = "right"
             )
 
-        self.directions = "Enter the quantity of bills and change. Rolls use the exact dollar ammount."
+        self.labor_price_entry = ttk.Entry(
+            self.tax_finder_frame,
+            textvariable = self.labor_price,
+            width = self.TEXT_ENTRY_LENGTH,
+            justify = "right"
+            )
 
-        self.error_label = ttk.Label(self.frame, text = self.directions, font=("Arial", 12))
-        self.error_label.config(foreground="black")
+        self.total_entry = ttk.Entry(
+            self.tax_finder_frame,
+            width = self.TEXT_ENTRY_LENGTH,
+            justify = "right"
+            )
 
-        root.bind('<Return>', self.next_entry)
-
-
-    def invalid_number_error(self, entry):
-        entry.focus()
-        entry.delete(0, tk.END)
-        entry.insert(0, "0")
-        entry.selection_range(0, tk.END)
-        self.error_label.config(foreground="red")
-        self.error_label["text"] = "Must enter a number"
-
-
-
-
-
-
-    def next_entry(self, e):
-        print("ne")
-        self.entries[self.index % len(self.entries)].focus()
-        self.entries[self.index % len(self.entries)].selection_range(0, tk.END)
-        self.get_total()
-
-    def handle_click(self, e):
-        self.index
-        self.index = entries.index(e.widget)
-        self.entries[index].focus()
-        self.entries[index].selection_range(0, tk.END)
-        self.index += 1
-        print(self.index)
-
-
-    def setup(self):
-        self.error_label.pack(pady=(20, 20))
-
-        # sep = ttk.Separator(frame, orient='horizontal').pack(fill = "x")
-
-        for i in range(len(self.denominations)):
-            if i == 6 or i == 7:
-                sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
-
-            self.labels.append(ttk.Label(self.frame, text=self.denominations[i]))
-            self.labels[i].pack()
-
-            self.values.append(tk.StringVar())
-
-            self.entries.append(ttk.Entry(
-                self.frame,
-                textvariable = self.values[i],
-                width = self.TEXT_ENTRY_LENGTH,
-                justify = "right"
-                ))
-
-            self.entries[i].bind("<ButtonPress-1>", self.handle_click)
-            if i == 6:
-                self.entries[i].insert(0, "0.00")
-            else:
-                self.entries[i].insert(0, "0")
-
-            self.entries[i].pack()
-
-        self.sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
-
-        self.total_label = ttk.Label(self.frame, text="Total")
         self.total_entry.insert(0, "0.00")
-        self.total_label.pack()
+        m = tk.Menu(self.root, tearoff=0)
+        m.add_command(label="Copy", command=lambda: copy())
 
+        def copy():
+            clipboard.copy(self.total_entry.get())
+
+        def do_popup(event):
+            try:
+                m.tk_popup(event.x_root, event.y_root)
+            finally:
+                m.grab_release()
+        self.total_entry.bind("<Button-2>", do_popup)
+
+        self.submit_button = ttk.Button(
+           self.tax_finder_frame,
+           text="Submit",
+           command = self.calc_tax_price
+        )
+
+        self.tax_directions.pack(pady=20)
+
+        self.total_price_label.pack()
+        self.total_price_entry.pack()
+
+        self.labor_price_label.pack()
+        self.labor_price_entry.pack()
+
+        self.part_price_label.pack()
         self.total_entry.pack()
 
-        self.entries[0].focus()
-        self.entries[0].selection_range(0, tk.END)
+        self.submit_button.pack()
 
-        # sep = ttk.Separator(frame, orient='horizontal').pack(fill = "x")
+        self.labor_price_entry.insert(0, "55.00")
+        def handle_enter_button(e):
+            self.calc_tax_price()
 
-
-    def get_total(self):
-        self.index, self.error_label
-        total = 0
-        for i in range(len(self.entries)):
-            try:
-                total += float(self.entries[i].get()) * self.denom_values[i]
-
-            except Exception as e:
-                self.invalid_number_error(self.entries[i])
-                return
-
-
-        self.index += 1
-        self.error_label.config(foreground="black")
-        self.error_label["text"] = self.directions
-        self.total_entry.delete(0, tk.END)
-        self.total_entry.insert(0, total)
+        self.main_window.bind('<Return>', handle_enter_button)

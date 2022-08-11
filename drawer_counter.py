@@ -1,14 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
+import clipboard
 # from tkinter.messagebox import showinfo
 class Drawer_counter:
-    def __init__(self, root):
+    def __init__(self, root, main_window):
         self.denominations = ["Hundreds", "Fifties", "Twentys", "Tens", "Fives", "Ones", "Rolls", "Quarters", "Dimes", "Nickels", "Pennies"]
         self.denom_values = [100, 50, 20, 10, 5, 1, 1, 0.25, 0.1, 0.05, 0.01]
         self.labels = []
         self.entries = []
         self.values = []
-
+        self.root = root
         self.total = 0
         self.index = 0
         self.TEXT_ENTRY_LENGTH = 7
@@ -17,7 +18,7 @@ class Drawer_counter:
 
 
         self.frame = ttk.Frame(root)
-        self.frame.pack(padx=10, pady=10, fill='x', expand=True)
+        self.frame.pack(padx=10, pady=0, fill='x', expand=True)
 
         self.total_entry = ttk.Entry(
             self.frame,
@@ -28,10 +29,10 @@ class Drawer_counter:
 
         self.directions = "Enter the quantity of bills and change. Rolls use the exact dollar ammount."
 
-        self.error_label = ttk.Label(self.frame, text = self.directions, font=("Arial", 12))
+        self.error_label = ttk.Label(self.frame, text = self.directions, font=("Arial", 10))
         self.error_label.config(foreground="black")
 
-        root.bind('<Return>', self.next_entry)
+        main_window.bind('<Return>', self.next_entry)
 
 
     def invalid_number_error(self, entry):
@@ -44,32 +45,29 @@ class Drawer_counter:
 
 
 
-
-
-
     def next_entry(self, e):
-        print("ne")
         self.entries[self.index % len(self.entries)].focus()
         self.entries[self.index % len(self.entries)].selection_range(0, tk.END)
         self.get_total()
 
+
+
     def handle_click(self, e):
-        self.index
         self.index = entries.index(e.widget)
         self.entries[index].focus()
         self.entries[index].selection_range(0, tk.END)
         self.index += 1
-        print(self.index)
+
 
 
     def setup(self):
-        self.error_label.pack(pady=(20, 20))
+        self.error_label.pack(pady=(20, 0))
 
         # sep = ttk.Separator(frame, orient='horizontal').pack(fill = "x")
 
         for i in range(len(self.denominations)):
-            if i == 6 or i == 7:
-                sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
+            # if i == 6 or i == 7:
+                # sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
 
             self.labels.append(ttk.Label(self.frame, text=self.denominations[i]))
             self.labels[i].pack()
@@ -83,7 +81,23 @@ class Drawer_counter:
                 justify = "right"
                 ))
 
+            m = tk.Menu(self.entries[i], tearoff=0)
+            m.add_command(label="Cut")
+
+            def do_popup(event):
+                try:
+                    m.tk_popup(event.x_root, event.y_root)
+                finally:
+                    m.grab_release()
+            self.entries[i].bind("<Button-3>", do_popup)
+
+
             self.entries[i].bind("<ButtonPress-1>", self.handle_click)
+
+
+
+
+
             if i == 6:
                 self.entries[i].insert(0, "0.00")
             else:
@@ -91,13 +105,27 @@ class Drawer_counter:
 
             self.entries[i].pack()
 
-        self.sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
+        # self.sep = ttk.Separator(self.frame, orient='horizontal').pack(fill = "x")
 
         self.total_label = ttk.Label(self.frame, text="Total")
         self.total_entry.insert(0, "0.00")
         self.total_label.pack()
 
         self.total_entry.pack()
+
+        m = tk.Menu(self.root, tearoff=0)
+        m.add_command(label="Copy", command=lambda: copy())
+
+        def copy():
+            clipboard.copy(self.total_entry.get())
+
+        def do_popup(event):
+            try:
+                m.tk_popup(event.x_root, event.y_root)
+            finally:
+                m.grab_release()
+        self.total_entry.bind("<Button-2>", do_popup)
+
 
         self.entries[0].focus()
         self.entries[0].selection_range(0, tk.END)

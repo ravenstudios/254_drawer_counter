@@ -8,7 +8,7 @@ Usage:
 from setuptools import setup
 
 APP = ['main.py']
-DATA_FILES = ['images/money-bag.icns']
+DATA_FILES = ['images/money-bag.icns', "drawer_counter.py", "tax_finder.py"]
 OPTIONS = {
     'iconfile':'images/money-bag.icns',
 }
