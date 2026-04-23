@@ -4,7 +4,7 @@ import clipboard
 from tkinter import messagebox
 
 
-class Tax_finder:
+class TaxFinder:
     def __init__(self, root, main_window):
 
         self.TAX = 1.0825
