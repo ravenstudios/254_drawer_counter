@@ -13,7 +13,7 @@ class Drawer_counter:
         self.total = 0
         self.index = 0
         self.TEXT_ENTRY_LENGTH = 7
-
+        self.main_window = main_window
         # root window
 
 
@@ -32,7 +32,7 @@ class Drawer_counter:
         self.error_label = ttk.Label(self.frame, text = self.directions, font=("Arial", 10))
         self.error_label.config(foreground="black")
 
-        main_window.bind('<Return>', self.next_entry)
+        self.main_window.bind('<Return>', self.next_entry)
 
 
     def invalid_number_error(self, entry):
@@ -81,6 +81,8 @@ class Drawer_counter:
                 justify = "right"
                 ))
 
+            # self.entries[len(self.entries) - 1].bind('<Return>', self.update_log)
+
             m = tk.Menu(self.entries[i], tearoff=0)
             m.add_command(label="Cut")
 
@@ -89,7 +91,7 @@ class Drawer_counter:
                     m.tk_popup(event.x_root, event.y_root)
                 finally:
                     m.grab_release()
-            self.entries[i].bind("<Button-3>", do_popup)
+            # self.entries[i].bind("<Button-3>", do_popup)
 
 
             self.entries[i].bind("<ButtonPress-1>", self.handle_click)
@@ -130,15 +132,18 @@ class Drawer_counter:
         self.entries[0].focus()
         self.entries[0].selection_range(0, tk.END)
 
-        # sep = ttk.Separator(frame, orient='horizontal').pack(fill = "x")
-
+    def update_log(self, e):
+        data = self.get_total()
+        print(data)
 
     def get_total(self):
+        data = {}
         self.index, self.error_label
         total = 0
         for i in range(len(self.entries)):
             try:
                 total += float(self.entries[i].get()) * self.denom_values[i]
+                data[self.denom_values[i]] = self.entries[i].get()
 
             except Exception as e:
                 self.invalid_number_error(self.entries[i])
@@ -150,3 +155,5 @@ class Drawer_counter:
         self.error_label["text"] = self.directions
         self.total_entry.delete(0, tk.END)
         self.total_entry.insert(0, total)
+
+        return data

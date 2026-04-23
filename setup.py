@@ -7,15 +7,12 @@ Usage:
 
 from setuptools import setup
 
-APP = ['main.py']
-DATA_FILES = ['images/money-bag.icns', "drawer_counter.py", "tax_finder.py"]
-OPTIONS = {
-    'iconfile':'images/money-bag.icns',
-}
+APP = ['drawer_counter.py']
+DATA_FILES = []
+OPTIONS = {}
 
 setup(
     app=APP,
-    name='Cash Counter',
     data_files=DATA_FILES,
     options={'py2app': OPTIONS},
     setup_requires=['py2app'],
