@@ -5,19 +5,20 @@ DATA_FILES = ["images/money-bag.icns"]
 
 OPTIONS = {
     "iconfile": "images/money-bag.icns",
-    "packages": ["openpyxl", "requests", "pyexcel"],
+    "packages": ["clipboard"],
     "plist": {
-        "CFBundleName": "Cash Counter",
-        "CFBundleDisplayName": "Cash Counter",
-        "CFBundleIdentifier": "com.ravenstudios.cashcounter",
+        "CFBundleName": "Drawer Cash Counter",
+        "CFBundleDisplayName": "Drawer Cash Counter",
+        "CFBundleIdentifier": "com.ravenstudios.drawercashcounter",
         "CFBundleVersion": "1.0.0",
         "CFBundleShortVersionString": "1.0.0",
+        "NSHumanReadableCopyright": "© 2026 Raven Studios",
     },
 }
 
 setup(
     app=APP,
-    name="Cash Counter",
+    name="Drawer Cash Counter",
     data_files=DATA_FILES,
     options={"py2app": OPTIONS},
     setup_requires=["py2app"],
